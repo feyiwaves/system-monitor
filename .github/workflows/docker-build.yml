@@ -1,0 +1,46 @@
+name: Docker Build and Push system monitor to Dockerhub
+
+on: # trigger
+    push:
+        branches: [main]
+
+jobs:
+    build-and-push:
+        runs-on: ubuntu-latest
+
+        steps:
+            -name: checkout source code
+            -uses: actions/checkout@v6
+
+            -name: Login to Docker Hub
+             uses: docker/login-action@v3
+            -with:
+                username: ${{ vars.DOCKERHUB_USERNAME }}
+                password: ${{ secrets.DOCKERHUB_TOKEN }}
+            
+            -name: Extract metadata (tags, labels) for docker image
+            -id: meta
+            -uses: docker/metadata-action@v5
+            -with:
+                images: ${{secrets.DOCKERHUB_USERNAME}}/system-monitor.sh]
+                tags: |
+                    type=ref,value=latest,enable={{is_default_branch}}
+                    type=ref,format=short
+                    type=ref,event=branch
+                    type=ref,event=pr
+                    type=semver,pattern={{version}}
+                    type=semver,pattern={{major}}.{{minor}}
+     
+            -name: Build and push docker image
+            -uses: docker/build-push-action@v6
+            -with:
+                context: .
+                file: ./Dockerfile 
+                push: true
+                tags: ${{steps.meta.outputs.tags}}
+                labels: ${{steps.meta.outputs.labels}}
+            
+            -name: Image Digest
+            -run: echo ${{steps.docker_build.outputs.digest}}
+
+
