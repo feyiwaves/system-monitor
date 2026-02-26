@@ -6,3 +6,4 @@ A simple Linux system monitoring tool containerized with Docker and automated us
 - Monitors memory usage
 - Monitors disk usage
 - Runs inside a Docker container
+- Automatically built and pushed to DockerHub using CI/CD
