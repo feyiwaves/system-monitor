@@ -1,5 +1,5 @@
 # base image
-FROM ubuntu:24.04
+FROM alpine:latest
 
 # install packages
 RUN apt-get update && apt-get install -y bc
